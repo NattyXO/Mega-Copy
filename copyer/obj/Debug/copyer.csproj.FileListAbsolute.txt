@@ -1,0 +1,27 @@
+C:\Users\Nahoo\Desktop\copyer\copyer\bin\Debug\copyer.exe.config
+C:\Users\Nahoo\Desktop\copyer\copyer\bin\Debug\copyer.exe
+C:\Users\Nahoo\Desktop\copyer\copyer\bin\Debug\copyer.pdb
+C:\Users\Nahoo\Desktop\copyer\copyer\obj\Debug\copyer.csprojResolveAssemblyReference.cache
+C:\Users\Nahoo\Desktop\copyer\copyer\obj\Debug\copyer.Form1.resources
+C:\Users\Nahoo\Desktop\copyer\copyer\obj\Debug\copyer.Properties.Resources.resources
+C:\Users\Nahoo\Desktop\copyer\copyer\obj\Debug\copyer.csproj.GenerateResource.Cache
+C:\Users\Nahoo\Desktop\copyer\copyer\obj\Debug\copyer.exe
+C:\Users\Nahoo\Desktop\copyer\copyer\obj\Debug\copyer.pdb
+C:\Users\Nahoo\Desktop\copyer\copyer\bin\Debug\copyer.exe.manifest
+C:\Users\Nahoo\Desktop\copyer\copyer\bin\Debug\copyer.application
+C:\Users\Nahoo\Desktop\copyer\copyer\obj\Debug\copyer.exe.manifest
+C:\Users\Nahoo\Desktop\copyer\copyer\obj\Debug\copyer.application
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.csproj.AssemblyReference.cache
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.Form1.resources
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.csproj.GenerateResource.cache
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.Properties.Resources.resources
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.csproj.CoreCompileInputs.cache
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.exe
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.pdb
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\bin\Debug\copyer.exe.config
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\bin\Debug\copyer.exe.manifest
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\bin\Debug\copyer.application
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\bin\Debug\copyer.exe
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\bin\Debug\copyer.pdb
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.exe.manifest
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.application
