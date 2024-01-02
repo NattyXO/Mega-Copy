@@ -11,3 +11,8 @@ C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\c
 C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.application
 C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.exe
 C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.pdb
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\MegaCopy.csproj.AssemblyReference.cache
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\copyer.popup.resources
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\bin\Debug\System.ValueTuple.dll
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\bin\Debug\System.ValueTuple.xml
+C:\Users\NattyXO\Downloads\Visual Studio 2017\Projects\copyer\copyer\obj\Debug\MegaCopy.csproj.CopyComplete

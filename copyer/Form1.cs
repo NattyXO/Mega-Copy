@@ -14,25 +14,19 @@ namespace copyer
 {
     public partial class Form1 : Form
     {
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HT_CAPTION = 0x2;
 
-        BackgroundWorker Worker = new BackgroundWorker();
-
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
 
         public Form1()
         {
             InitializeComponent();
-           
-        }
-       
-        private void btnMinimize_Click(object sender, EventArgs e)
-        {
-            this.WindowState = FormWindowState.Minimized;
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
 
         private void btnOpenFileLocation_Click(object sender, EventArgs e)
         {
@@ -43,8 +37,13 @@ namespace copyer
             {
                 string[] fileNames = ofd.FileNames;
                 txtSource.Text = string.Join(", ", fileNames);
+
+                long totalSize = GetTotalFileSize(fileNames); // Pass file names directly to GetTotalFileSize
+                lblFilesize.Font = new Font("Microsoft Sans Serif", 9);
+                lblFilesize.Text = $"Total size: {FormatFileSize(totalSize)}";
             }
         }
+
 
         private void btnDestinationLocation_Click(object sender, EventArgs e)
         {
@@ -56,295 +55,64 @@ namespace copyer
             }
         }
 
-        bool CopySingleFile(string source, string destination)
+        private long GetTotalFileSize(string[] files)
         {
-            const int maxRetries = 3;
-            const int delayMs = 100;
+            long totalSize = 0;
 
-            for (int i = 0; i < maxRetries; i++)
+            foreach (string file in files)
             {
-                try
+                FileInfo fileInfo = new FileInfo(file);
+                if (fileInfo.Exists)
                 {
-                    File.Copy(source, destination, true);
-                    return true;
-                }
-                catch (IOException ex) when (i < maxRetries - 1)
-                {
-                    System.Threading.Thread.Sleep(delayMs);
-                }
-                catch (UnauthorizedAccessException ex)
-                {
-                    MessageBox.Show($"Unauthorized access: {ex.Message}");
-                    return false;
-                }
-                catch (FileNotFoundException ex)
-                {
-                    MessageBox.Show($"File not found: {ex.Message}");
-                    return false;
-                }
-                catch (PathTooLongException ex)
-                {
-                    MessageBox.Show($"Path too long: {ex.Message}");
-                    return false;
-                }
-                catch (DirectoryNotFoundException ex)
-                {
-                    MessageBox.Show($"Directory not found: {ex.Message}");
-                    return false;
-                }
-                catch (NotSupportedException ex)
-                {
-                    MessageBox.Show($"Invalid path format: {ex.Message}");
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    // Log additional information for debugging purposes
-                    MessageBox.Show($"Error copying file: {ex.Message}\nSource: {source}\nDestination: {destination}");
-                    return false;
+                    totalSize += fileInfo.Length;
                 }
             }
-            return false;
+
+            return totalSize;
         }
 
-
-
-
-        private void btnCopyandOverwrite_Click(object sender, EventArgs e)
+        private string FormatFileSize(long bytes)
         {
-            string[] sourceFiles = txtSource.Text.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
-            string targetFolder = txtTarget.Text;
+            const long kb = 1024L;
+            const long mb = 1024L * 1024L;
+            const long gb = 1024L * 1024L * 1024L;
+            const long tb = 1024L * 1024L * 1024L * 1024L;
 
-            // Check if source or destination paths are empty or null
-            if (string.IsNullOrWhiteSpace(txtSource.Text) || string.IsNullOrWhiteSpace(txtTarget.Text))
+            string formattedSize;
+
+            if (bytes < kb)
             {
-                MessageBox.Show("Please provide both source and destination locations.");
-                return;
+                formattedSize = $"{bytes} bytes";
+            }
+            else if (bytes < mb)
+            {
+                double sizeInKB = (double)bytes / kb;
+                formattedSize = $"{sizeInKB:F2} KB";
+            }
+            else if (bytes < gb)
+            {
+                double sizeInMB = (double)bytes / mb;
+                formattedSize = $"{sizeInMB:F2} MB";
+            }
+            else if (bytes < tb)
+            {
+                double sizeInGB = (double)bytes / gb;
+                formattedSize = $"{sizeInGB:F2} GB";
+            }
+            else
+            {
+                double sizeInTB = (double)bytes / tb;
+                formattedSize = $"{sizeInTB:F2} TB";
             }
 
-            // Check if the source and destination are the same
-            if (txtSource.Text.Trim().Equals(txtTarget.Text.Trim(), StringComparison.OrdinalIgnoreCase))
-            {
-                MessageBox.Show("Source and destination cannot be the same.");
-                return;
-            }
-
-            // Check if source files exist
-            bool sourceExists = sourceFiles.All(File.Exists);
-
-            if (!sourceExists)
-            {
-                MessageBox.Show("Source file(s) do not exist.");
-                return;
-            }
-
-            int filesToCopy = sourceFiles.Length;
-            int filesCopied = 0;
-
-            foreach (string sourceFile in sourceFiles)
-            {
-                string fileName = Path.GetFileName(sourceFile);
-                string destination = Path.Combine(targetFolder, fileName);
-
-                if (File.Exists(destination))
-                {
-                    // Check if the file exists in the destination; if yes, ask for overwrite confirmation
-                    DialogResult result = MessageBox.Show($"File '{fileName}' already exists in the destination. Overwrite?", "Confirmation", MessageBoxButtons.YesNo);
-
-                    if (result == DialogResult.No)
-                        continue; // Skip this file if the user chooses not to overwrite
-                }
-
-                if (CopySingleFile(sourceFile, destination))
-                {
-                    filesCopied++;
-                    // Delete the original file after successful copying
-                    File.Delete(sourceFile);
-                }
-            }
-
-            if (filesCopied == filesToCopy)
-            {
-                MessageBox.Show("File(s) copied successfully!");
-            }
+            return formattedSize;
         }
 
-        private void btnCutandOverwrite_Click(object sender, EventArgs e)
-        {
-            string sourceText = txtSource.Text.Trim();
-            string targetText = txtTarget.Text.Trim();
-
-            if (string.IsNullOrEmpty(sourceText) || string.IsNullOrEmpty(targetText))
-            {
-                MessageBox.Show("Please provide both source and destination paths.");
-                return;
-            }
-
-            string[] sourceFiles = sourceText.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
-            string targetFolder = targetText;
-
-            int filesToCut = sourceFiles.Length;
-            int filesCut = 0;
-            bool sourceExists = true;
-
-            foreach (string sourceFile in sourceFiles)
-            {
-                if (!File.Exists(sourceFile))
-                {
-                    sourceExists = false;
-                    continue; // Skip processing this file
-                }
-
-                string fileName = Path.GetFileName(sourceFile);
-                string destination = Path.Combine(targetFolder, fileName);
-
-                if (CopySingleFile(sourceFile, destination))
-                {
-                    filesCut++;
-                    File.Delete(sourceFile); // Delete the original file after successful copying
-                }
-            }
-
-            if (!sourceExists)
-            {
-                MessageBox.Show("Source file does not exist.");
-            }
-            else if (filesCut == filesToCut)
-            {
-                MessageBox.Show("File(s) cut successfully!");
-            }
-        }
-
-        private void btnCutandDuplicate_Click(object sender, EventArgs e)
-        {
-            string[] sourceFiles = txtSource.Text.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
-            string targetFolder = txtTarget.Text;
-
-            // Check if source or destination paths are empty or null
-            if (string.IsNullOrWhiteSpace(txtSource.Text) || string.IsNullOrWhiteSpace(txtTarget.Text))
-            {
-                MessageBox.Show("Please provide both source and destination locations.");
-                return;
-            }
-
-            // Check if the source and destination are the same
-            if (txtSource.Text.Trim().Equals(txtTarget.Text.Trim(), StringComparison.OrdinalIgnoreCase))
-            {
-                MessageBox.Show("Source and destination cannot be the same.");
-                return;
-            }
-
-            // Check if source files exist
-            bool sourceExists = sourceFiles.All(File.Exists);
-
-            if (!sourceExists)
-            {
-                MessageBox.Show("Source file(s) do not exist.");
-                return;
-            }
-
-            int filesCopied = 0;
-            int filesCut = 0;
-            bool sourceFilesExist = true;
-
-            foreach (string sourceFile in sourceFiles)
-            {
-                if (!File.Exists(sourceFile))
-                {
-                    sourceFilesExist = false;
-                    continue; // Skip processing this file
-                }
-
-                string fileName = Path.GetFileName(sourceFile);
-                string destination = Path.Combine(targetFolder, fileName);
-
-                // Create a new file name by adding a suffix to the original file name
-                string newFileName = Path.Combine(targetFolder, $"{Path.GetFileNameWithoutExtension(sourceFile)}_copy{Path.GetExtension(sourceFile)}");
-
-                if (File.Exists(destination))
-                {
-                    // Check if the file exists in the destination; if yes, create a new copy with a different name
-                    newFileName = Path.Combine(targetFolder, $"{Path.GetFileNameWithoutExtension(sourceFile)}_copy{DateTime.Now:yyyyMMddHHmmssfff}{Path.GetExtension(sourceFile)}");
-                }
-
-                if (CopySingleFile(sourceFile, newFileName))
-                {
-                    filesCopied++;
-                    File.Delete(sourceFile); // Delete the original file after successful copying
-                    filesCut++;
-                }
-            }
-
-            if (!sourceFilesExist)
-            {
-                MessageBox.Show("Source file does not exist.");
-            }
-            else if (filesCopied == sourceFiles.Length && filesCut == sourceFiles.Length)
-            {
-                MessageBox.Show("File(s) cut and duplicated successfully!");
-            }
-        }
-
-        private void btnCopyandDuplicate_Click(object sender, EventArgs e)
-        {
-            string[] sourceFiles = txtSource.Text.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
-            string targetFolder = txtTarget.Text;
-
-            // Check if source or destination paths are empty or null
-            if (string.IsNullOrWhiteSpace(txtSource.Text) || string.IsNullOrWhiteSpace(txtTarget.Text))
-            {
-                MessageBox.Show("Please provide both source and destination locations.");
-                return;
-            }
-
-            // Check if the source and destination are the same
-            if (txtSource.Text.Trim().Equals(txtTarget.Text.Trim(), StringComparison.OrdinalIgnoreCase))
-            {
-                MessageBox.Show("Source and destination cannot be the same.");
-                return;
-            }
-
-            // Check if source files exist
-            bool sourceExists = sourceFiles.All(File.Exists);
-
-            if (!sourceExists)
-            {
-                MessageBox.Show("Source file(s) do not exist.");
-                return;
-            }
-
-            int filesCopied = 0;
-
-            foreach (string sourceFile in sourceFiles)
-            {
-                string fileName = Path.GetFileName(sourceFile);
-                string destination = Path.Combine(targetFolder, fileName);
-
-                // Create a new file name by adding a suffix to the original file name
-                string newFileName = Path.Combine(targetFolder, $"{Path.GetFileNameWithoutExtension(sourceFile)}_copy{Path.GetExtension(sourceFile)}");
-
-                if (File.Exists(destination))
-                {
-                    // Check if the file exists in the destination; if yes, create a new copy with a different name
-                    newFileName = Path.Combine(targetFolder, $"{Path.GetFileNameWithoutExtension(sourceFile)}_copy{DateTime.Now:yyyyMMddHHmmssfff}{Path.GetExtension(sourceFile)}");
-                }
-
-                if (CopySingleFile(sourceFile, newFileName))
-                {
-                    filesCopied++;
-                }
-            }
-
-            if (filesCopied == sourceFiles.Length)
-            {
-                MessageBox.Show("File(s) duplicated successfully!");
-            }
-        }
 
         private void picGitHub_Click(object sender, EventArgs e)
         {
             // Replace "YourGitHubUsername" with your actual GitHub username
-            string githubUrl = "https://github.com/NattyXO";
+            string githubUrl = "https://github.com/NattyXO/Mega-Copy";
 
             try
             {
@@ -354,6 +122,436 @@ namespace copyer
             catch (Exception ex)
             {
                 MessageBox.Show($"Error opening GitHub: {ex.Message}");
+            }
+        }
+
+        private void pnlBar_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            }
+        }
+
+        private void picInfo_Click(object sender, EventArgs e)
+        {
+            string version = Application.ProductVersion;
+            string productName = Application.ProductName;
+
+            string message = $"{productName} Version {version}" + "\nAhadu Tech";
+            MessageBox.Show(message, "Developer Info");
+
+        }
+
+        private void picClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void picMinimize_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void btnCopy_Click(object sender, EventArgs e)
+        {
+            string[] sourceFiles = txtSource.Text.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+            string destinationFolder = txtTarget.Text;
+
+            bool existsInDestination = false;
+
+            foreach (string sourceFile in sourceFiles)
+            {
+                string fileName = Path.GetFileName(sourceFile);
+                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                if (File.Exists(destinationFilePath))
+                {
+                    existsInDestination = true;
+                    break;
+                }
+            }
+
+            if (existsInDestination)
+            {
+                popup ss = new popup();
+                ss.ShowDialog();
+
+                // After the user selects an option in the Popup form, handle the action accordingly
+                // For example:
+                if (ss.UserOption == PopupOption.Overwrite)
+                {
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        try
+                        {
+                            File.Copy(sourceFile, destinationFilePath, true);
+                            lblInfo.Text = "Files copied successfully!";
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    lblInfo.Text = "All files copied and overwritten successfully!";
+                    
+                }
+                else if (ss.UserOption == PopupOption.OverwriteAll)
+                {
+                    // Implement logic for Overwrite All
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        try
+                        {
+                            File.Copy(sourceFile, destinationFilePath, true); // Overwrite existing files
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    lblInfo.Text = "All files copied and overwritten successfully!";
+                }
+                else if (ss.UserOption == PopupOption.Skip)
+                {
+                    // Implement logic for Skip (skip the first existing file, ask for each)
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        if (File.Exists(destinationFilePath))
+                        {
+                            DialogResult dialogResult = MessageBox.Show($"File '{fileName}' already exists. Skip?", "File Exists", MessageBoxButtons.YesNo);
+                            if (dialogResult == DialogResult.Yes)
+                            {
+                                continue; // Skip this file
+                            }
+                            else
+                            {
+                                CopyFilesWithoutOverwrite(sourceFiles, destinationFolder);
+                            }
+                        }
+
+                        // Copy the file if it doesn't exist in the destination or user chooses not to skip
+                        try
+                        {
+                            File.Copy(sourceFile, destinationFilePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    
+                    lblInfo.Text = "Copy operation completed!";
+                   
+                   
+                }
+                else if (ss.UserOption == PopupOption.SkipAll)
+                {
+                    // Implement logic for Skip All (skip all existing files)
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        if (File.Exists(destinationFilePath))
+                        {
+                            continue; // Skip this file
+                        }
+
+                        // Copy the file if it doesn't exist in the destination
+                        try
+                        {
+                            File.Copy(sourceFile, destinationFilePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    lblInfo.Text = "Copy operation completed!";
+                }
+                else if (ss.UserOption == PopupOption.KeepBoth)
+                {
+                    // Implement logic for Keep Both
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        int counter = 1;
+                        while (File.Exists(destinationFilePath))
+                        {
+                            string newFileName = $"{Path.GetFileNameWithoutExtension(sourceFile)}_{counter}{Path.GetExtension(sourceFile)}";
+                            destinationFilePath = Path.Combine(destinationFolder, newFileName);
+                            counter++;
+                        }
+
+                        try
+                        {
+                            File.Copy(sourceFile, destinationFilePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    lblInfo.Text = "Files copied, keeping both versions.";
+                   
+                }
+                else if (ss.UserOption == PopupOption.None)
+                {
+                    MessageBox.Show("Copy operation canceled by the user.");
+                }
+                
+            }
+            else
+            {
+                // No existing files in the destination, proceed with the copy operation
+                CopyFilesWithoutOverwrite(sourceFiles, destinationFolder);
+            }
+
+        }
+        // Function to perform the copy operation without overwriting existing files
+        private void CopyFilesWithoutOverwrite(string[] sourceFiles, string destinationFolder)
+        {
+            foreach (string sourceFile in sourceFiles)
+            {
+                string fileName = Path.GetFileName(sourceFile);
+                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                try
+                {
+                    File.Copy(sourceFile, destinationFilePath);
+                    lblInfo.Text = "Files copied successfully!";
+                   
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}");
+                }
+            }
+        }
+         
+        private void btnCut_Click(object sender, EventArgs e)
+        {
+            string[] sourceFiles = txtSource.Text.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+            string destinationFolder = txtTarget.Text;
+
+            bool existsInDestination = false;
+
+            foreach (string sourceFile in sourceFiles)
+            {
+                string fileName = Path.GetFileName(sourceFile);
+                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                if (File.Exists(destinationFilePath))
+                {
+                    existsInDestination = true;
+                    break;
+                }
+            }
+
+            if (existsInDestination)
+            {
+                popup ss = new popup();
+                ss.ShowDialog();
+
+                // After the user selects an option in the Popup form, handle the action accordingly
+                // For example:
+                if (ss.UserOption == PopupOption.Overwrite)
+                {
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        if (File.Exists(destinationFilePath))
+                        {
+                            try
+                            {
+                                File.Delete(destinationFilePath); // Delete the existing file in the destination
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"An error occurred while deleting existing file: {ex.Message}");
+                                continue; // Skip moving the file if deletion fails
+                            }
+                        }
+
+                        try
+                        {
+                            File.Move(sourceFile, destinationFilePath); // Move the file after deletion
+                            lblInfo.Text = "Files moved successfully!";
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    lblInfo.Text = "All files moved and overwritten successfully!";
+
+                }
+                else if (ss.UserOption == PopupOption.OverwriteAll)
+                {
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        if (File.Exists(destinationFilePath))
+                        {
+                            try
+                            {
+                                File.Delete(destinationFilePath); // Delete the existing file in the destination
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"An error occurred while deleting existing file: {ex.Message}");
+                                continue; // Skip moving the file if deletion fails
+                            }
+                        }
+
+                        try
+                        {
+                            File.Move(sourceFile, destinationFilePath); // Move the file after deletion
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    lblInfo.Text = "All files moved and overwritten successfully!";
+                }
+                else if (ss.UserOption == PopupOption.Skip)
+                {
+                    // Implement logic for Skip (skip the first existing file, ask for each)
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        if (File.Exists(destinationFilePath))
+                        {
+                            DialogResult dialogResult = MessageBox.Show($"File '{fileName}' already exists. Skip?", "File Exists", MessageBoxButtons.YesNo);
+                            if (dialogResult == DialogResult.Yes)
+                            {
+                                continue; // Skip this file
+                            }
+                            else
+                            {
+                                CutFilesWithoutOverwrite(sourceFiles, destinationFolder);
+                            }
+                        }
+
+                        // Copy the file if it doesn't exist in the destination or user chooses not to skip
+                        try
+                        {
+                            File.Move(sourceFile, destinationFilePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"An error occurred: {ex.Message}");
+                        }
+                    }
+
+                    lblInfo.Text = "Move operation completed!";
+
+
+                }
+                else if (ss.UserOption == PopupOption.SkipAll)
+                {
+                    // Implement logic for Skip All (skip all existing files)
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        if (File.Exists(destinationFilePath))
+                        {
+                            continue; // Skip this file
+                        }
+
+                        // Copy the file if it doesn't exist in the destination
+                        try
+                        {
+                            File.Move(sourceFile, destinationFilePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    lblInfo.Text = "Move operation completed!";
+                }
+                else if (ss.UserOption == PopupOption.KeepBoth)
+                {
+                    // Implement logic for Keep Both
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        int counter = 1;
+                        while (File.Exists(destinationFilePath))
+                        {
+                            string newFileName = $"{Path.GetFileNameWithoutExtension(sourceFile)}_{counter}{Path.GetExtension(sourceFile)}";
+                            destinationFilePath = Path.Combine(destinationFolder, newFileName);
+                            counter++;
+                        }
+
+                        try
+                        {
+                            File.Move(sourceFile, destinationFilePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"An error occurred: {ex.Message}");
+                        }
+                    }
+                    lblInfo.Text = "Files Moved, keeping both versions.";
+
+                }
+                else if (ss.UserOption == PopupOption.None)
+                {
+                    MessageBox.Show("Move operation canceled by the user.");
+                }
+
+            }
+            else
+            {
+                // No existing files in the destination, proceed with the copy operation
+                CutFilesWithoutOverwrite(sourceFiles, destinationFolder);
+            }
+        }
+        private void CutFilesWithoutOverwrite(string[] sourceFiles, string destinationFolder)
+        {
+            foreach (string sourceFile in sourceFiles)
+            {
+                string fileName = Path.GetFileName(sourceFile);
+                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                if (!File.Exists(destinationFilePath))
+                {
+                    try
+                    {
+                        File.Move(sourceFile, destinationFilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"An error occurred: {ex.Message}");
+                    }
+                }
+                
             }
         }
     }
