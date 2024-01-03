@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,25 +32,124 @@ namespace copyer
 
         // Property to store the user's selected option
         public PopupOption UserOption { get; private set; }
-        public popup()
+
+        private Form1 parentForm;
+
+        public popup(Form1 form1)
         {
             InitializeComponent();
-            Size = new Size(453, 230);
-            StartPosition = FormStartPosition.Manual;
-            Location = new Point(10, 10); // or Cursor.Position if you want to set it to cursor position
+            parentForm = form1;
+            string lblSource = parentForm.FileSourceLocationText;
+            
+
+            // Get file information using FileInfo
+            FileInfo fileInfoSource = new FileInfo(lblSource);
+
+            //file size
+            long fileSizeInBytes = fileInfoSource.Length;
+
+            string fileSizeFormatted = FormatFileSize(fileSizeInBytes);
+            lblFile1Size.Text = fileSizeFormatted;
+
+            // File name
+            string fileName = fileInfoSource.Name;
+            lblFile1Name.Text = fileName;
+
+            // File location (directory)
+            string fileDirectory = fileInfoSource.DirectoryName;
+            lblFile1Location.Text = fileDirectory;
+
+            // Created date and time
+            DateTime createdDateTime = fileInfoSource.CreationTime;
+            lblFile1CreatedDateAndTime.Text = $"{createdDateTime}";
+
+
+            // File icon
+            Icon fileIcon = Icon.ExtractAssociatedIcon(lblSource);
+            Image fileImage = fileIcon.ToBitmap();
+            picFile1Logo.Image = fileImage;
+
+            string lblTarget = parentForm.FileTargetLocationText + "\\" + fileName;
+
+            // Get file information using FileInfo
+            FileInfo fileInfoTarget = new FileInfo(lblTarget);
+
+            //file size
+            long fileSizeInBytesTarget = fileInfoTarget.Length;
+            string fileSizeFormattedTarget = FormatFileSize(fileSizeInBytes);
+
+            if (lblFile1Size.Text == fileSizeFormattedTarget)
+            {
+                lblFilesTheSameSize.Text = "Same Size";
+            }else
+            {
+                lblFilesTheSameSize.Text = "Different Size";
+            }
+           
+
+            // File name
+            string fileNameTarget = fileInfoTarget.Name;
+            lblFile2Name.Text = fileName;
+
+            // File location (directory)
+            string fileDirectoryTarget = fileInfoTarget.DirectoryName;
+            lblFile2Location.Text = fileDirectory;
+
+
+            // Created date and time
+            DateTime createdDateTimeTarget = fileInfoTarget.CreationTime.Date;
+
+           
+            if (DateTime.TryParse(lblFile1CreatedDateAndTime.Text, out createdDateTime))
+            {
+                // Comparison between label's Date and createdDateTimeTarget's Date
+                if (createdDateTime.Date == createdDateTimeTarget)
+                {
+                    lblFilesCreatedTheSameDate.Text = "Same Date";
+                }
+                else
+                {
+                    lblFilesCreatedTheSameDate.Text = "Different Date";
+                }
+            }
+
+            // File icon
+            Icon fileIconTarget = Icon.ExtractAssociatedIcon(lblTarget);
+            Image fileImageTarget = fileIcon.ToBitmap();
+            picFile2Logo.Image = fileImage;
         }
 
-        public string LabelText
+        private string FormatFileSize(long bytes)
         {
-            get
+            const int kb = 1024;
+            const int mb = 1024 * 1024;
+            const int gb = 1024 * 1024 * 1024;
+
+            string formattedSize;
+
+            if (bytes < kb)
             {
-                return this.lblConfirmation.Text;
+                formattedSize = $"{bytes} bytes";
             }
-            set
+            else if (bytes < mb)
             {
-                this.lblConfirmation.Text = value;
+                double sizeInKB = (double)bytes / kb;
+                formattedSize = $"{sizeInKB:F2} KB";
             }
+            else if (bytes < gb)
+            {
+                double sizeInMB = (double)bytes / mb;
+                formattedSize = $"{sizeInMB:F2} MB";
+            }
+            else
+            {
+                double sizeInGB = (double)bytes / gb;
+                formattedSize = $"{sizeInGB:F2} GB";
+            }
+
+            return formattedSize;
         }
+
         private void pnlBar_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)

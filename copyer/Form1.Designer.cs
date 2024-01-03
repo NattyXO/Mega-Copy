@@ -124,7 +124,7 @@
             this.lblProgress.AutoSize = true;
             this.lblProgress.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblProgress.ForeColor = System.Drawing.Color.White;
-            this.lblProgress.Location = new System.Drawing.Point(420, 112);
+            this.lblProgress.Location = new System.Drawing.Point(401, 112);
             this.lblProgress.Name = "lblProgress";
             this.lblProgress.Size = new System.Drawing.Size(18, 20);
             this.lblProgress.TabIndex = 2;
@@ -268,7 +268,7 @@
             // 
             // pnlProgressBar
             // 
-            this.pnlProgressBar.BackColor = System.Drawing.Color.PaleGreen;
+            this.pnlProgressBar.BackColor = System.Drawing.Color.LimeGreen;
             this.pnlProgressBar.Location = new System.Drawing.Point(11, 134);
             this.pnlProgressBar.Name = "pnlProgressBar";
             this.pnlProgressBar.Size = new System.Drawing.Size(2, 18);
@@ -281,13 +281,13 @@
             // lblFilesize
             // 
             this.lblFilesize.AutoSize = true;
-            this.lblFilesize.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFilesize.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblFilesize.ForeColor = System.Drawing.Color.White;
             this.lblFilesize.Location = new System.Drawing.Point(320, 154);
             this.lblFilesize.Name = "lblFilesize";
-            this.lblFilesize.Size = new System.Drawing.Size(18, 20);
+            this.lblFilesize.Size = new System.Drawing.Size(62, 15);
             this.lblFilesize.TabIndex = 15;
-            this.lblFilesize.Text = "0";
+            this.lblFilesize.Text = "Total size:";
             this.lblFilesize.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblInfo

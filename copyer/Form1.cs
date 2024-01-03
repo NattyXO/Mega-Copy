@@ -14,6 +14,18 @@ namespace copyer
 {
     public partial class Form1 : Form
     {
+
+        public string FileSourceLocationText
+        {
+            get { return txtSource.Text; }
+            set { txtSource.Text = value; }
+        }
+        public string FileTargetLocationText
+        {
+            get { return txtTarget.Text; }
+            set { txtTarget.Text = value; }
+        }
+
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
@@ -42,6 +54,7 @@ namespace copyer
                 lblFilesize.Font = new Font("Microsoft Sans Serif", 9);
                 lblFilesize.Text = $"Total size: {FormatFileSize(totalSize)}";
             }
+
         }
 
 
@@ -154,7 +167,7 @@ namespace copyer
             this.WindowState = FormWindowState.Minimized;
         }
 
-        private void btnCopy_Click(object sender, EventArgs e)
+        private async void btnCopy_Click(object sender, EventArgs e)
         {
             string[] sourceFiles = txtSource.Text.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
             string destinationFolder = txtTarget.Text;
@@ -175,7 +188,7 @@ namespace copyer
 
             if (existsInDestination)
             {
-                popup ss = new popup();
+                popup ss = new popup(this);
                 ss.ShowDialog();
 
                 // After the user selects an option in the Popup form, handle the action accordingly
@@ -197,8 +210,9 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
+                    await TransferFiles(sourceFiles, destinationFolder);
                     lblInfo.Text = "All files copied and overwritten successfully!";
-                    
+
                 }
                 else if (ss.UserOption == PopupOption.OverwriteAll)
                 {
@@ -217,6 +231,7 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
+                    await TransferFiles(sourceFiles, destinationFolder);
                     lblInfo.Text = "All files copied and overwritten successfully!";
                 }
                 else if (ss.UserOption == PopupOption.Skip)
@@ -250,10 +265,10 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
-                    
+                    await TransferFilesSkip(sourceFiles, destinationFolder);
                     lblInfo.Text = "Copy operation completed!";
-                   
-                   
+
+
                 }
                 else if (ss.UserOption == PopupOption.SkipAll)
                 {
@@ -278,6 +293,7 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
+                    await TransferFilesSkip(sourceFiles, destinationFolder);
                     lblInfo.Text = "Copy operation completed!";
                 }
                 else if (ss.UserOption == PopupOption.KeepBoth)
@@ -305,18 +321,20 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
+                    await TransferFiles(sourceFiles, destinationFolder);
                     lblInfo.Text = "Files copied, keeping both versions.";
-                   
+
                 }
                 else if (ss.UserOption == PopupOption.None)
                 {
-                    MessageBox.Show("Copy operation canceled by the user.");
+                    MessageBox.Show("Copy operation canceled.");
                 }
-                
+
             }
             else
             {
                 // No existing files in the destination, proceed with the copy operation
+                await TransferFiles(sourceFiles, destinationFolder);
                 CopyFilesWithoutOverwrite(sourceFiles, destinationFolder);
             }
 
@@ -333,7 +351,7 @@ namespace copyer
                 {
                     File.Copy(sourceFile, destinationFilePath);
                     lblInfo.Text = "Files copied successfully!";
-                   
+
                 }
                 catch (Exception ex)
                 {
@@ -341,8 +359,8 @@ namespace copyer
                 }
             }
         }
-         
-        private void btnCut_Click(object sender, EventArgs e)
+
+        private async void btnCut_Click(object sender, EventArgs e)
         {
             string[] sourceFiles = txtSource.Text.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
             string destinationFolder = txtTarget.Text;
@@ -363,7 +381,7 @@ namespace copyer
 
             if (existsInDestination)
             {
-                popup ss = new popup();
+                popup ss = new popup(this);
                 ss.ShowDialog();
 
                 // After the user selects an option in the Popup form, handle the action accordingly
@@ -398,6 +416,7 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
+                    await TransferFiles(sourceFiles, destinationFolder);
                     lblInfo.Text = "All files moved and overwritten successfully!";
 
                 }
@@ -430,6 +449,7 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
+                    await TransferFiles(sourceFiles, destinationFolder);
                     lblInfo.Text = "All files moved and overwritten successfully!";
                 }
                 else if (ss.UserOption == PopupOption.Skip)
@@ -463,7 +483,7 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
-
+                    await TransferFilesSkip(sourceFiles, destinationFolder);
                     lblInfo.Text = "Move operation completed!";
 
 
@@ -491,6 +511,7 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
+                    await TransferFilesSkip(sourceFiles, destinationFolder);
                     lblInfo.Text = "Move operation completed!";
                 }
                 else if (ss.UserOption == PopupOption.KeepBoth)
@@ -518,19 +539,22 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
+                    await TransferFiles(sourceFiles, destinationFolder);
                     lblInfo.Text = "Files Moved, keeping both versions.";
 
                 }
                 else if (ss.UserOption == PopupOption.None)
                 {
-                    MessageBox.Show("Move operation canceled by the user.");
+                    MessageBox.Show("Move operation canceled.");
                 }
 
             }
             else
             {
                 // No existing files in the destination, proceed with the copy operation
+                await TransferFiles(sourceFiles, destinationFolder);
                 CutFilesWithoutOverwrite(sourceFiles, destinationFolder);
+                
             }
         }
         private void CutFilesWithoutOverwrite(string[] sourceFiles, string destinationFolder)
@@ -551,8 +575,74 @@ namespace copyer
                         MessageBox.Show($"An error occurred: {ex.Message}");
                     }
                 }
-                
+
             }
         }
+
+        private async Task TransferFiles(string[] sourceFiles, string destinationFolder)
+        {
+            // Total size of all files to transfer
+            long totalSize = GetTotalFileSize(sourceFiles);
+
+            // Set the maximum value for the base progress bar
+            ProgressBar1.Maximum = 100;
+
+            // Reset progress bars and labels
+            pnlProgressBar.Width = 0;
+            ProgressBar1.Value = 0;
+            lblProgress.Text = "0%";
+
+            long transferredSize = 0;
+
+            foreach (string sourceFile in sourceFiles)
+            {
+                try
+                {
+                    using (FileStream sourceStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
+                    {
+                        byte[] buffer = new byte[8192];
+                        int bytesRead;
+                        while ((bytesRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                        {
+                            transferredSize += bytesRead;
+
+                            // Calculate percentage and update the progress bar and label
+                            int percentage = (int)((double)transferredSize / totalSize * 100);
+                            ProgressBar1.Value = percentage;
+                            lblProgress.Text = $"{percentage}%";
+
+                            // Update the moving progress bar
+                            pnlProgressBar.Width = (int)((double)transferredSize / totalSize * ProgressBar1.Width);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}");
+                }
+            }
+
+            lblProgress.Text = "100%"; // Ensure it reaches 100% after completion
+        }
+
+        private async Task TransferFilesSkip(string[] sourceFiles, string destinationFolder)
+        {
+           
+
+            // Set the maximum value for the base progress bar
+            ProgressBar1.Maximum = 100;
+
+            // Reset progress bars and labels
+            pnlProgressBar.Width = 0;
+            ProgressBar1.Value = 0;
+            lblProgress.Text = "0%";
+
+           // Update the moving progress bar
+            pnlProgressBar.Width = ProgressBar1.Width;
+             
+
+            lblProgress.Text = "100%"; // Ensure it reaches 100% after completion
+        }
+
     }
 }
