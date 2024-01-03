@@ -265,7 +265,7 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
-                    await TransferFilesSkip(sourceFiles, destinationFolder);
+                    TransferFilesSkip();
                     lblInfo.Text = "Copy operation completed!";
 
 
@@ -293,7 +293,7 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
-                    await TransferFilesSkip(sourceFiles, destinationFolder);
+                    TransferFilesSkip();
                     lblInfo.Text = "Copy operation completed!";
                 }
                 else if (ss.UserOption == PopupOption.KeepBoth)
@@ -483,7 +483,7 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
-                    await TransferFilesSkip(sourceFiles, destinationFolder);
+                    TransferFilesSkip();
                     lblInfo.Text = "Move operation completed!";
 
 
@@ -511,7 +511,7 @@ namespace copyer
                             MessageBox.Show($"An error occurred: {ex.Message}");
                         }
                     }
-                    await TransferFilesSkip(sourceFiles, destinationFolder);
+                    TransferFilesSkip();
                     lblInfo.Text = "Move operation completed!";
                 }
                 else if (ss.UserOption == PopupOption.KeepBoth)
@@ -625,10 +625,9 @@ namespace copyer
             lblProgress.Text = "100%"; // Ensure it reaches 100% after completion
         }
 
-        private async Task TransferFilesSkip(string[] sourceFiles, string destinationFolder)
+        private void TransferFilesSkip()
         {
            
-
             // Set the maximum value for the base progress bar
             ProgressBar1.Maximum = 100;
 
