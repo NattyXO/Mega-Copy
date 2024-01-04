@@ -65,38 +65,40 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(12, 41);
+            this.label1.Location = new System.Drawing.Point(3, 41);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(64, 20);
+            this.label1.Size = new System.Drawing.Size(60, 18);
             this.label1.TabIndex = 1;
             this.label1.Text = "Source:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(15, 85);
+            this.label2.Location = new System.Drawing.Point(6, 85);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(59, 20);
+            this.label2.Size = new System.Drawing.Size(54, 18);
             this.label2.TabIndex = 2;
             this.label2.Text = "Target:";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // txtSource
             // 
-            this.txtSource.Location = new System.Drawing.Point(83, 41);
+            this.txtSource.Location = new System.Drawing.Point(64, 41);
             this.txtSource.Name = "txtSource";
-            this.txtSource.Size = new System.Drawing.Size(318, 20);
+            this.txtSource.ReadOnly = true;
+            this.txtSource.Size = new System.Drawing.Size(340, 20);
             this.txtSource.TabIndex = 3;
             // 
             // txtTarget
             // 
-            this.txtTarget.Location = new System.Drawing.Point(83, 85);
+            this.txtTarget.Location = new System.Drawing.Point(64, 85);
             this.txtTarget.Name = "txtTarget";
-            this.txtTarget.Size = new System.Drawing.Size(318, 20);
+            this.txtTarget.ReadOnly = true;
+            this.txtTarget.Size = new System.Drawing.Size(340, 20);
             this.txtTarget.TabIndex = 4;
             // 
             // btnCopy
@@ -106,7 +108,7 @@
             this.btnCopy.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCopy.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.749999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCopy.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(29)))), ((int)(((byte)(36)))));
-            this.btnCopy.Location = new System.Drawing.Point(256, 182);
+            this.btnCopy.Location = new System.Drawing.Point(267, 182);
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(68, 23);
             this.btnCopy.TabIndex = 7;
@@ -118,17 +120,17 @@
             // 
             this.ProgressBar1.Location = new System.Drawing.Point(12, 134);
             this.ProgressBar1.Name = "ProgressBar1";
-            this.ProgressBar1.Size = new System.Drawing.Size(431, 18);
+            this.ProgressBar1.Size = new System.Drawing.Size(435, 18);
             this.ProgressBar1.TabIndex = 8;
             // 
             // lblProgress
             // 
-            this.lblProgress.AutoSize = true;
-            this.lblProgress.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblProgress.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblProgress.ForeColor = System.Drawing.Color.White;
-            this.lblProgress.Location = new System.Drawing.Point(401, 112);
+            this.lblProgress.Location = new System.Drawing.Point(397, 112);
             this.lblProgress.Name = "lblProgress";
-            this.lblProgress.Size = new System.Drawing.Size(18, 20);
+            this.lblProgress.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lblProgress.Size = new System.Drawing.Size(46, 20);
             this.lblProgress.TabIndex = 2;
             this.lblProgress.Text = "0";
             this.lblProgress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -207,7 +209,7 @@
             this.btnCut.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCut.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.749999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCut.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(29)))), ((int)(((byte)(36)))));
-            this.btnCut.Location = new System.Drawing.Point(354, 182);
+            this.btnCut.Location = new System.Drawing.Point(365, 182);
             this.btnCut.Name = "btnCut";
             this.btnCut.Size = new System.Drawing.Size(68, 23);
             this.btnCut.TabIndex = 9;
@@ -239,6 +241,7 @@
             // 
             // btnDestinationLocation
             // 
+            this.btnDestinationLocation.AllowDrop = true;
             this.btnDestinationLocation.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(29)))), ((int)(((byte)(36)))));
             this.btnDestinationLocation.FlatAppearance.BorderSize = 0;
             this.btnDestinationLocation.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -254,6 +257,7 @@
             // 
             // btnOpenFileLocation
             // 
+            this.btnOpenFileLocation.AllowDrop = true;
             this.btnOpenFileLocation.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(29)))), ((int)(((byte)(36)))));
             this.btnOpenFileLocation.FlatAppearance.BorderSize = 0;
             this.btnOpenFileLocation.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -285,18 +289,18 @@
             this.lblFilesize.AutoSize = true;
             this.lblFilesize.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblFilesize.ForeColor = System.Drawing.Color.White;
-            this.lblFilesize.Location = new System.Drawing.Point(320, 154);
+            this.lblFilesize.Location = new System.Drawing.Point(326, 155);
             this.lblFilesize.Name = "lblFilesize";
-            this.lblFilesize.Size = new System.Drawing.Size(62, 15);
+            this.lblFilesize.Size = new System.Drawing.Size(69, 15);
             this.lblFilesize.TabIndex = 15;
-            this.lblFilesize.Text = "Total size:";
+            this.lblFilesize.Text = "Total size:0";
             this.lblFilesize.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblInfo
             // 
             this.lblInfo.AutoSize = true;
             this.lblInfo.ForeColor = System.Drawing.Color.White;
-            this.lblInfo.Location = new System.Drawing.Point(120, 117);
+            this.lblInfo.Location = new System.Drawing.Point(157, 117);
             this.lblInfo.Name = "lblInfo";
             this.lblInfo.Size = new System.Drawing.Size(0, 13);
             this.lblInfo.TabIndex = 16;

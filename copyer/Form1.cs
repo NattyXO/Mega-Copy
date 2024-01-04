@@ -244,170 +244,193 @@ namespace copyer
 
             bool existsInDestination = false;
 
-            foreach (string sourceFile in sourceFiles)
+            if (string.IsNullOrEmpty(destinationFolder) && sourceFiles.Length == 0)
             {
-                string fileName = Path.GetFileName(sourceFile);
-                string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                if (File.Exists(destinationFilePath))
-                {
-                    existsInDestination = true;
-                    break;
-                }
-            }
-
-            if (existsInDestination)
-            {
-                separateAlreadyExistsFiles();
-                SeparateAlreadyExistsFilesInDestination();
-                popup ss = new popup(this);
-                ss.ShowDialog();
-
-                // After the user selects an option in the Popup form, handle the action accordingly
-                // For example:
-                if (ss.UserOption == PopupOption.Overwrite)
-                {
-                    foreach (string sourceFile in sourceFiles)
-                    {
-                        string fileName = Path.GetFileName(sourceFile);
-                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                        try
-                        {
-                            File.Copy(sourceFile, destinationFilePath, true);
-                            lblInfo.Text = "Files copied successfully!";
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An error occurred: {ex.Message}");
-                        }
-                    }
-                    await TransferFiles(sourceFiles, destinationFolder);
-                    lblInfo.Text = "All files copied and overwritten successfully!";
-
-                }
-                else if (ss.UserOption == PopupOption.OverwriteAll)
-                {
-                    // Implement logic for Overwrite All
-                    foreach (string sourceFile in sourceFiles)
-                    {
-                        string fileName = Path.GetFileName(sourceFile);
-                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                        try
-                        {
-                            File.Copy(sourceFile, destinationFilePath, true); // Overwrite existing files
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An error occurred: {ex.Message}");
-                        }
-                    }
-                    await TransferFiles(sourceFiles, destinationFolder);
-                    lblInfo.Text = "All files copied and overwritten successfully!";
-                }
-                else if (ss.UserOption == PopupOption.Skip)
-                {
-                    // Implement logic for Skip (skip the first existing file, ask for each)
-                    foreach (string sourceFile in sourceFiles)
-                    {
-                        string fileName = Path.GetFileName(sourceFile);
-                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                        if (File.Exists(destinationFilePath))
-                        {
-                            DialogResult dialogResult = MessageBox.Show($"File '{fileName}' already exists. Skip?", "File Exists", MessageBoxButtons.YesNo);
-                            if (dialogResult == DialogResult.Yes)
-                            {
-                                continue; // Skip this file
-                            }
-                            else
-                            {
-                                CutFilesWithoutOverwrite(sourceFiles, destinationFolder);
-                            }
-                        }
-
-                        // Copy the file if it doesn't exist in the destination or user chooses not to skip
-                        try
-                        {
-                            File.Move(sourceFile, destinationFilePath);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An error occurred: {ex.Message}");
-                        }
-                    }
-                    TransferFilesSkip();
-                    lblInfo.Text = "Move operation completed!";
-
-                }
-                else if (ss.UserOption == PopupOption.SkipAll)
-                {
-                    // Implement logic for Skip All (skip all existing files)
-                    foreach (string sourceFile in sourceFiles)
-                    {
-                        string fileName = Path.GetFileName(sourceFile);
-                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                        if (File.Exists(destinationFilePath))
-                        {
-                            continue; // Skip this file
-                        }
-
-                        // Copy the file if it doesn't exist in the destination
-                        try
-                        {
-                            File.Copy(sourceFile, destinationFilePath);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An error occurred: {ex.Message}");
-                        }
-                    }
-                    TransferFilesSkip();
-                    lblInfo.Text = "Copy operation completed!";
-                }
-                else if (ss.UserOption == PopupOption.KeepBoth)
-                {
-                    // Implement logic for Keep Both
-                    foreach (string sourceFile in sourceFiles)
-                    {
-                        string fileName = Path.GetFileName(sourceFile);
-                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                        int counter = 1;
-                        while (File.Exists(destinationFilePath))
-                        {
-                            string newFileName = $"{Path.GetFileNameWithoutExtension(sourceFile)}_{counter}{Path.GetExtension(sourceFile)}";
-                            destinationFilePath = Path.Combine(destinationFolder, newFileName);
-                            counter++;
-                        }
-
-                        try
-                        {
-                            File.Copy(sourceFile, destinationFilePath);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An error occurred: {ex.Message}");
-                        }
-                    }
-                    await TransferFiles(sourceFiles, destinationFolder);
-                    lblInfo.Text = "Files copied, keeping both versions.";
-
-                }
-                else if (ss.UserOption == PopupOption.None)
-                {
-                    MessageBox.Show("Copy operation canceled.");
-                }
-
+                // Destination folder is empty or null, show a message box
+                MessageBox.Show("Destination folder and Source is cannot be empty.");
             }
             else
             {
-                // No existing files in the destination, proceed with the copy operation
-                await TransferFiles(sourceFiles, destinationFolder);
-                CopyFilesWithoutOverwrite(sourceFiles, destinationFolder);
+                // Destination folder is not empty
+                // Now check if the sourceFiles array is empty
+                if (sourceFiles.Length == 0)
+                {
+                    // Source is empty, show a message box
+                    MessageBox.Show("Source is empty.");
+                }
+                else if (string.IsNullOrEmpty(destinationFolder))
+                {
+                    MessageBox.Show("Destination folder is cannot be empty.");
+                }
+                else
+                {
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        if (File.Exists(destinationFilePath))
+                        {
+                            existsInDestination = true;
+                            break;
+                        }
+                    }
+
+                    if (existsInDestination)
+                    {
+                        separateAlreadyExistsFiles();
+                        SeparateAlreadyExistsFilesInDestination();
+                        popup ss = new popup(this);
+                        ss.ShowDialog();
+
+                        // After the user selects an option in the Popup form, handle the action accordingly
+                        // For example:
+                        if (ss.UserOption == PopupOption.Overwrite)
+                        {
+                            foreach (string sourceFile in sourceFiles)
+                            {
+                                string fileName = Path.GetFileName(sourceFile);
+                                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                                try
+                                {
+                                    File.Copy(sourceFile, destinationFilePath, true);
+                                    lblInfo.Text = "Files copied successfully!";
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"An error occurred: {ex.Message}");
+                                }
+                            }
+                            await TransferFiles(sourceFiles, destinationFolder);
+                            lblInfo.Text = "All files copied and overwritten successfully!";
+
+                        }
+                        else if (ss.UserOption == PopupOption.OverwriteAll)
+                        {
+                            // Implement logic for Overwrite All
+                            foreach (string sourceFile in sourceFiles)
+                            {
+                                string fileName = Path.GetFileName(sourceFile);
+                                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                                try
+                                {
+                                    File.Copy(sourceFile, destinationFilePath, true); // Overwrite existing files
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"An error occurred: {ex.Message}");
+                                }
+                            }
+                            await TransferFiles(sourceFiles, destinationFolder);
+                            lblInfo.Text = "All files copied and overwritten successfully!";
+                        }
+                        else if (ss.UserOption == PopupOption.Skip)
+                        {
+                            // Implement logic for Skip (skip the first existing file, ask for each)
+                            foreach (string sourceFile in sourceFiles)
+                            {
+                                string fileName = Path.GetFileName(sourceFile);
+                                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                                if (File.Exists(destinationFilePath))
+                                {
+                                    DialogResult dialogResult = MessageBox.Show($"File '{fileName}' already exists. Skip?", "File Exists", MessageBoxButtons.YesNo);
+                                    if (dialogResult == DialogResult.Yes)
+                                    {
+                                        continue; // Skip this file
+                                    }
+                                    else
+                                    {
+                                        CutFilesWithoutOverwrite(sourceFiles, destinationFolder);
+                                    }
+                                }
+
+                                // Copy the file if it doesn't exist in the destination or user chooses not to skip
+                                try
+                                {
+                                    File.Move(sourceFile, destinationFilePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"An error occurred: {ex.Message}");
+                                }
+                            }
+                            TransferFilesSkip();
+                            lblInfo.Text = "Copy completed!";
+
+                        }
+                        else if (ss.UserOption == PopupOption.SkipAll)
+                        {
+                            // Implement logic for Skip All (skip all existing files)
+                            foreach (string sourceFile in sourceFiles)
+                            {
+                                string fileName = Path.GetFileName(sourceFile);
+                                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                                if (File.Exists(destinationFilePath))
+                                {
+                                    continue; // Skip this file
+                                }
+
+                                // Copy the file if it doesn't exist in the destination
+                                try
+                                {
+                                    File.Copy(sourceFile, destinationFilePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"An error occurred: {ex.Message}");
+                                }
+                            }
+                            TransferFilesSkip();
+                            lblInfo.Text = "Copy completed!";
+                        }
+                        else if (ss.UserOption == PopupOption.KeepBoth)
+                        {
+                            // Implement logic for Keep Both
+                            foreach (string sourceFile in sourceFiles)
+                            {
+                                string fileName = Path.GetFileName(sourceFile);
+                                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                                int counter = 1;
+                                while (File.Exists(destinationFilePath))
+                                {
+                                    string newFileName = $"{Path.GetFileNameWithoutExtension(sourceFile)}_{counter}{Path.GetExtension(sourceFile)}";
+                                    destinationFilePath = Path.Combine(destinationFolder, newFileName);
+                                    counter++;
+                                }
+
+                                try
+                                {
+                                    File.Copy(sourceFile, destinationFilePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"An error occurred: {ex.Message}");
+                                }
+                            }
+                            await TransferFiles(sourceFiles, destinationFolder);
+                            lblInfo.Text = "Files copied, keeping both files.";
+
+                        }
+                        else if (ss.UserOption == PopupOption.None)
+                        {
+                            MessageBox.Show("Copy canceled.");
+                        }
+
+                    }
+                    else
+                    {
+                        // No existing files in the destination, proceed with the copy operation
+                        await TransferFiles(sourceFiles, destinationFolder);
+                        CopyFilesWithoutOverwrite(sourceFiles, destinationFolder);
+                    }
+                }
             }
+            
 
         }
         // Function to perform the copy operation without overwriting existing files
@@ -426,7 +449,7 @@ namespace copyer
                 }
                 catch (Exception ex)
                 {
-                    //MessageBox.Show($"An error occurred: {ex.Message}");
+                    MessageBox.Show($"An error occurred: {ex.Message}");
                 }
             }
         }
@@ -437,198 +460,221 @@ namespace copyer
             string destinationFolder = txtTarget.Text;
 
             bool existsInDestination = false;
-
-            foreach (string sourceFile in sourceFiles)
+            if (string.IsNullOrEmpty(destinationFolder)&& sourceFiles.Length == 0)
             {
-                string fileName = Path.GetFileName(sourceFile);
-                string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                if (File.Exists(destinationFilePath))
-                {
-                    existsInDestination = true;
-                    break;
-                }
-            }
-
-            if (existsInDestination)
-            {
-                separateAlreadyExistsFiles();
-                SeparateAlreadyExistsFilesInDestination();
-                popup ss = new popup(this);
-                ss.ShowDialog();
-
-                // After the user selects an option in the Popup form, handle the action accordingly
-                // For example:
-                if (ss.UserOption == PopupOption.Overwrite)
-                {
-                    foreach (string sourceFile in sourceFiles)
-                    {
-                        string fileName = Path.GetFileName(sourceFile);
-                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                        if (File.Exists(destinationFilePath))
-                        {
-                            try
-                            {
-                                File.Delete(destinationFilePath); // Delete the existing file in the destination
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show($"An error occurred while deleting existing file: {ex.Message}");
-                                continue; // Skip moving the file if deletion fails
-                            }
-                        }
-
-                        try
-                        {
-                            File.Move(sourceFile, destinationFilePath); // Move the file after deletion
-                            lblInfo.Text = "Files moved successfully!";
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An error occurred: {ex.Message}");
-                        }
-                    }
-                    await TransferFiles(sourceFiles, destinationFolder);
-                    lblInfo.Text = "All files moved and overwritten successfully!";
-
-                }
-                else if (ss.UserOption == PopupOption.OverwriteAll)
-                {
-                    foreach (string sourceFile in sourceFiles)
-                    {
-                        string fileName = Path.GetFileName(sourceFile);
-                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                        if (File.Exists(destinationFilePath))
-                        {
-                            try
-                            {
-                                File.Delete(destinationFilePath); // Delete the existing file in the destination
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show($"An error occurred while deleting existing file: {ex.Message}");
-                                continue; // Skip moving the file if deletion fails
-                            }
-                        }
-
-                        try
-                        {
-                            File.Move(sourceFile, destinationFilePath); // Move the file after deletion
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An error occurred: {ex.Message}");
-                        }
-                    }
-                    await TransferFiles(sourceFiles, destinationFolder);
-                    lblInfo.Text = "All files moved and overwritten successfully!";
-                }
-                else if (ss.UserOption == PopupOption.Skip)
-                {
-                    // Implement logic for Skip (skip the first existing file, ask for each)
-                    foreach (string sourceFile in sourceFiles)
-                    {
-                        string fileName = Path.GetFileName(sourceFile);
-                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                        if (File.Exists(destinationFilePath))
-                        {
-                            DialogResult dialogResult = MessageBox.Show($"File '{fileName}' already exists. Skip?", "File Exists", MessageBoxButtons.YesNo);
-                            if (dialogResult == DialogResult.Yes)
-                            {
-                                continue; // Skip this file
-                            }
-                            else
-                            {
-                                CutFilesWithoutOverwrite(sourceFiles, destinationFolder);
-                            }
-                        }
-
-                        // Copy the file if it doesn't exist in the destination or user chooses not to skip
-                        try
-                        {
-                            File.Move(sourceFile, destinationFilePath);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An error occurred: {ex.Message}");
-                        }
-                    }
-                    TransferFilesSkip();
-                    lblInfo.Text = "Move operation completed!";
-
-
-                }
-                else if (ss.UserOption == PopupOption.SkipAll)
-                {
-                    // Implement logic for Skip All (skip all existing files)
-                    foreach (string sourceFile in sourceFiles)
-                    {
-                        string fileName = Path.GetFileName(sourceFile);
-                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                        if (File.Exists(destinationFilePath))
-                        {
-                            continue; // Skip this file
-                        }
-
-                        // Copy the file if it doesn't exist in the destination
-                        try
-                        {
-                            File.Move(sourceFile, destinationFilePath);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An error occurred: {ex.Message}");
-                        }
-                    }
-                    TransferFilesSkip();
-                    lblInfo.Text = "Move operation completed!";
-                }
-                else if (ss.UserOption == PopupOption.KeepBoth)
-                {
-                    // Implement logic for Keep Both
-                    foreach (string sourceFile in sourceFiles)
-                    {
-                        string fileName = Path.GetFileName(sourceFile);
-                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
-
-                        int counter = 1;
-                        while (File.Exists(destinationFilePath))
-                        {
-                            string newFileName = $"{Path.GetFileNameWithoutExtension(sourceFile)}_{counter}{Path.GetExtension(sourceFile)}";
-                            destinationFilePath = Path.Combine(destinationFolder, newFileName);
-                            counter++;
-                        }
-
-                        try
-                        {
-                            File.Move(sourceFile, destinationFilePath);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An error occurred: {ex.Message}");
-                        }
-                    }
-                    await TransferFiles(sourceFiles, destinationFolder);
-                    lblInfo.Text = "Files Moved, keeping both versions.";
-
-                }
-                else if (ss.UserOption == PopupOption.None)
-                {
-                    MessageBox.Show("Move operation canceled.");
-                }
-
+                // Destination folder is empty or null, show a message box
+                MessageBox.Show("Destination folder and Source is cannot be empty.");
             }
             else
             {
-                // No existing files in the destination, proceed with the copy operation
-                await TransferFiles(sourceFiles, destinationFolder);
-                CutFilesWithoutOverwrite(sourceFiles, destinationFolder);
-                
+                // Destination folder is not empty
+                // Now check if the sourceFiles array is empty
+                if (sourceFiles.Length == 0)
+                {
+                    // Source is empty, show a message box
+                    MessageBox.Show("Source is empty.");
+                }
+                else if(string.IsNullOrEmpty(destinationFolder))
+                {
+                    MessageBox.Show("Destination folder is cannot be empty.");
+                }
+                else
+                {
+                    foreach (string sourceFile in sourceFiles)
+                    {
+                        string fileName = Path.GetFileName(sourceFile);
+                        string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                        if (File.Exists(destinationFilePath))
+                        {
+                            existsInDestination = true;
+                            break;
+                        }
+                    }
+
+                    if (existsInDestination)
+                    {
+                        separateAlreadyExistsFiles();
+                        SeparateAlreadyExistsFilesInDestination();
+                        popup ss = new popup(this);
+                        ss.ShowDialog();
+
+                        // After the user selects an option in the Popup form, handle the action accordingly
+                        // For example:
+                        if (ss.UserOption == PopupOption.Overwrite)
+                        {
+                            foreach (string sourceFile in sourceFiles)
+                            {
+                                string fileName = Path.GetFileName(sourceFile);
+                                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                                if (File.Exists(destinationFilePath))
+                                {
+                                    try
+                                    {
+                                        File.Delete(destinationFilePath); // Delete the existing file in the destination
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show($"An error occurred while deleting existing file: {ex.Message}");
+                                        continue; // Skip moving the file if deletion fails
+                                    }
+                                }
+
+                                try
+                                {
+                                    File.Move(sourceFile, destinationFilePath); // Move the file after deletion
+                                    lblInfo.Text = "Files moved successfully!";
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"An error occurred: {ex.Message}");
+                                }
+                            }
+                            await TransferFiles(sourceFiles, destinationFolder);
+                            lblInfo.Text = "All files moved and overwritten successfully!";
+
+                        }
+                        else if (ss.UserOption == PopupOption.OverwriteAll)
+                        {
+                            foreach (string sourceFile in sourceFiles)
+                            {
+                                string fileName = Path.GetFileName(sourceFile);
+                                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                                if (File.Exists(destinationFilePath))
+                                {
+                                    try
+                                    {
+                                        File.Delete(destinationFilePath); // Delete the existing file in the destination
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show($"An error occurred while deleting existing file: {ex.Message}");
+                                        continue; // Skip moving the file if deletion fails
+                                    }
+                                }
+
+                                try
+                                {
+                                    File.Move(sourceFile, destinationFilePath); // Move the file after deletion
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"An error occurred: {ex.Message}");
+                                }
+                            }
+                            await TransferFiles(sourceFiles, destinationFolder);
+                            lblInfo.Text = "All files moved and overwritten successfully!";
+                        }
+                        else if (ss.UserOption == PopupOption.Skip)
+                        {
+                            // Implement logic for Skip (skip the first existing file, ask for each)
+                            foreach (string sourceFile in sourceFiles)
+                            {
+                                string fileName = Path.GetFileName(sourceFile);
+                                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                                if (File.Exists(destinationFilePath))
+                                {
+                                    DialogResult dialogResult = MessageBox.Show($"File '{fileName}' already exists. Skip?", "File Exists", MessageBoxButtons.YesNo);
+                                    if (dialogResult == DialogResult.Yes)
+                                    {
+                                        continue; // Skip this file
+                                    }
+                                    else
+                                    {
+                                        CutFilesWithoutOverwrite(sourceFiles, destinationFolder);
+                                    }
+                                }
+
+                                // Copy the file if it doesn't exist in the destination or user chooses not to skip
+                                try
+                                {
+                                    File.Move(sourceFile, destinationFilePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"An error occurred: {ex.Message}");
+                                }
+                            }
+                            TransferFilesSkip();
+                            lblInfo.Text = "Move completed!";
+
+
+                        }
+                        else if (ss.UserOption == PopupOption.SkipAll)
+                        {
+                            // Implement logic for Skip All (skip all existing files)
+                            foreach (string sourceFile in sourceFiles)
+                            {
+                                string fileName = Path.GetFileName(sourceFile);
+                                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                                if (File.Exists(destinationFilePath))
+                                {
+                                    continue; // Skip this file
+                                }
+
+                                // Copy the file if it doesn't exist in the destination
+                                try
+                                {
+                                    File.Move(sourceFile, destinationFilePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"An error occurred: {ex.Message}");
+                                }
+                            }
+                            TransferFilesSkip();
+                            lblInfo.Text = "Move completed!";
+                        }
+                        else if (ss.UserOption == PopupOption.KeepBoth)
+                        {
+                            // Implement logic for Keep Both
+                            foreach (string sourceFile in sourceFiles)
+                            {
+                                string fileName = Path.GetFileName(sourceFile);
+                                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                                int counter = 1;
+                                while (File.Exists(destinationFilePath))
+                                {
+                                    string newFileName = $"{Path.GetFileNameWithoutExtension(sourceFile)}_{counter}{Path.GetExtension(sourceFile)}";
+                                    destinationFilePath = Path.Combine(destinationFolder, newFileName);
+                                    counter++;
+                                }
+
+                                try
+                                {
+                                    File.Move(sourceFile, destinationFilePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"An error occurred: {ex.Message}");
+                                }
+                            }
+                            await TransferFiles(sourceFiles, destinationFolder);
+                            lblInfo.Text = "Files Moved, keeping both files.";
+
+                        }
+                        else if (ss.UserOption == PopupOption.None)
+                        {
+                            MessageBox.Show("Move canceled.");
+                        }
+
+                    }
+                    else
+                    {
+                        // No existing files in the destination, proceed with the copy operation
+                        await TransferFiles(sourceFiles, destinationFolder);
+                        CutFilesWithoutOverwrite(sourceFiles, destinationFolder);
+
+                    }
+                }
             }
+
+            
         }
         private void CutFilesWithoutOverwrite(string[] sourceFiles, string destinationFolder)
         {
