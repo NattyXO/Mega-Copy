@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="copyer.exe" size="418304">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="copyer.exe" size="419328">
       <assemblyIdentity name="copyer" version="1.0.1.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>20Rb0R9dMmohov7c22OcF9z2J5wcO9uht3ZGo1glYnY=</dsig:DigestValue>
+        <dsig:DigestValue>vkQq+Va76TCy48kvn4ABVoDj8Gp1r6K+Jed44STkS50=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

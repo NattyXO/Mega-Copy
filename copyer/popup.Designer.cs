@@ -236,61 +236,57 @@ namespace copyer
             // 
             // lblFile1CreatedDateAndTime
             // 
-            this.lblFile1CreatedDateAndTime.AutoSize = true;
             this.lblFile1CreatedDateAndTime.ForeColor = System.Drawing.Color.White;
-            this.lblFile1CreatedDateAndTime.Location = new System.Drawing.Point(321, 26);
+            this.lblFile1CreatedDateAndTime.Location = new System.Drawing.Point(335, 26);
             this.lblFile1CreatedDateAndTime.Name = "lblFile1CreatedDateAndTime";
-            this.lblFile1CreatedDateAndTime.Size = new System.Drawing.Size(77, 13);
+            this.lblFile1CreatedDateAndTime.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lblFile1CreatedDateAndTime.Size = new System.Drawing.Size(105, 13);
             this.lblFile1CreatedDateAndTime.TabIndex = 2;
             this.lblFile1CreatedDateAndTime.Text = "Date and Time";
             // 
             // lblFile1Size
             // 
-            this.lblFile1Size.AutoSize = true;
             this.lblFile1Size.ForeColor = System.Drawing.Color.White;
-            this.lblFile1Size.Location = new System.Drawing.Point(382, 49);
+            this.lblFile1Size.Location = new System.Drawing.Point(338, 49);
             this.lblFile1Size.Name = "lblFile1Size";
-            this.lblFile1Size.Size = new System.Drawing.Size(46, 13);
+            this.lblFile1Size.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lblFile1Size.Size = new System.Drawing.Size(102, 13);
             this.lblFile1Size.TabIndex = 3;
             this.lblFile1Size.Text = "File Size";
             // 
             // lblFile1Name
             // 
-            this.lblFile1Name.AutoSize = true;
             this.lblFile1Name.ForeColor = System.Drawing.Color.White;
             this.lblFile1Name.Location = new System.Drawing.Point(53, 31);
             this.lblFile1Name.Name = "lblFile1Name";
-            this.lblFile1Name.Size = new System.Drawing.Size(54, 13);
+            this.lblFile1Name.Size = new System.Drawing.Size(251, 17);
             this.lblFile1Name.TabIndex = 4;
             this.lblFile1Name.Text = "File Name";
             // 
             // lblFile1Location
             // 
-            this.lblFile1Location.AutoSize = true;
             this.lblFile1Location.ForeColor = System.Drawing.Color.White;
-            this.lblFile1Location.Location = new System.Drawing.Point(52, 48);
+            this.lblFile1Location.Location = new System.Drawing.Point(53, 49);
             this.lblFile1Location.Name = "lblFile1Location";
-            this.lblFile1Location.Size = new System.Drawing.Size(67, 13);
+            this.lblFile1Location.Size = new System.Drawing.Size(251, 17);
             this.lblFile1Location.TabIndex = 5;
             this.lblFile1Location.Text = "File Location";
             // 
             // lblFile2Location
             // 
-            this.lblFile2Location.AutoSize = true;
             this.lblFile2Location.ForeColor = System.Drawing.Color.White;
-            this.lblFile2Location.Location = new System.Drawing.Point(52, 177);
+            this.lblFile2Location.Location = new System.Drawing.Point(53, 177);
             this.lblFile2Location.Name = "lblFile2Location";
-            this.lblFile2Location.Size = new System.Drawing.Size(67, 13);
+            this.lblFile2Location.Size = new System.Drawing.Size(251, 17);
             this.lblFile2Location.TabIndex = 10;
             this.lblFile2Location.Text = "File Location";
             // 
             // lblFile2Name
             // 
-            this.lblFile2Name.AutoSize = true;
             this.lblFile2Name.ForeColor = System.Drawing.Color.White;
-            this.lblFile2Name.Location = new System.Drawing.Point(53, 161);
+            this.lblFile2Name.Location = new System.Drawing.Point(53, 159);
             this.lblFile2Name.Name = "lblFile2Name";
-            this.lblFile2Name.Size = new System.Drawing.Size(54, 13);
+            this.lblFile2Name.Size = new System.Drawing.Size(251, 17);
             this.lblFile2Name.TabIndex = 9;
             this.lblFile2Name.Text = "File Name";
             // 
@@ -298,7 +294,7 @@ namespace copyer
             // 
             this.lblFilesTheSameSize.AutoSize = true;
             this.lblFilesTheSameSize.ForeColor = System.Drawing.Color.White;
-            this.lblFilesTheSameSize.Location = new System.Drawing.Point(377, 179);
+            this.lblFilesTheSameSize.Location = new System.Drawing.Point(383, 179);
             this.lblFilesTheSameSize.Name = "lblFilesTheSameSize";
             this.lblFilesTheSameSize.Size = new System.Drawing.Size(57, 13);
             this.lblFilesTheSameSize.TabIndex = 8;
@@ -308,7 +304,7 @@ namespace copyer
             // 
             this.lblFilesCreatedTheSameDate.AutoSize = true;
             this.lblFilesCreatedTheSameDate.ForeColor = System.Drawing.Color.White;
-            this.lblFilesCreatedTheSameDate.Location = new System.Drawing.Point(375, 161);
+            this.lblFilesCreatedTheSameDate.Location = new System.Drawing.Point(380, 161);
             this.lblFilesCreatedTheSameDate.Name = "lblFilesCreatedTheSameDate";
             this.lblFilesCreatedTheSameDate.Size = new System.Drawing.Size(60, 13);
             this.lblFilesCreatedTheSameDate.TabIndex = 7;
@@ -316,17 +312,19 @@ namespace copyer
             // 
             // picFile2Logo
             // 
-            this.picFile2Logo.Location = new System.Drawing.Point(5, 155);
+            this.picFile2Logo.Location = new System.Drawing.Point(5, 154);
             this.picFile2Logo.Name = "picFile2Logo";
-            this.picFile2Logo.Size = new System.Drawing.Size(48, 43);
+            this.picFile2Logo.Size = new System.Drawing.Size(42, 42);
+            this.picFile2Logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.picFile2Logo.TabIndex = 11;
             this.picFile2Logo.TabStop = false;
             // 
             // picFile1Logo
             // 
-            this.picFile1Logo.Location = new System.Drawing.Point(5, 27);
+            this.picFile1Logo.Location = new System.Drawing.Point(5, 26);
             this.picFile1Logo.Name = "picFile1Logo";
-            this.picFile1Logo.Size = new System.Drawing.Size(48, 43);
+            this.picFile1Logo.Size = new System.Drawing.Size(42, 42);
+            this.picFile1Logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.picFile1Logo.TabIndex = 6;
             this.picFile1Logo.TabStop = false;
             // 

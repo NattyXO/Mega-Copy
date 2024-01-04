@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Forms;
 
 namespace copyer
@@ -39,71 +40,64 @@ namespace copyer
         {
             InitializeComponent();
             parentForm = form1;
-            string lblSource = parentForm.FileSourceLocationText;
             
+            List<string> existingFiles = parentForm.ExistingFiles;
 
-            // Get file information using FileInfo
-            FileInfo fileInfoSource = new FileInfo(lblSource);
-
-            //file size
-            long fileSizeInBytes = fileInfoSource.Length;
-
-            string fileSizeFormatted = FormatFileSize(fileSizeInBytes);
-            lblFile1Size.Text = fileSizeFormatted;
-
-            // File name
-            string fileName = fileInfoSource.Name;
-            lblFile1Name.Text = fileName;
-
-            // File location (directory)
-            string fileDirectory = fileInfoSource.DirectoryName;
-            lblFile1Location.Text = fileDirectory;
-
-            // Created date and time
-            DateTime createdDateTime = fileInfoSource.CreationTime;
-            lblFile1CreatedDateAndTime.Text = $"{createdDateTime}";
-
-
-            // File icon
-            Icon fileIcon = Icon.ExtractAssociatedIcon(lblSource);
-            Image fileImage = fileIcon.ToBitmap();
-            picFile1Logo.Image = fileImage;
-
-            string lblTarget = parentForm.FileTargetLocationText + "\\" + fileName;
-
-            // Get file information using FileInfo
-            FileInfo fileInfoTarget = new FileInfo(lblTarget);
-
-            //file size
-            long fileSizeInBytesTarget = fileInfoTarget.Length;
-            string fileSizeFormattedTarget = FormatFileSize(fileSizeInBytes);
-
-            if (lblFile1Size.Text == fileSizeFormattedTarget)
+            foreach (string filePath in existingFiles)
             {
-                lblFilesTheSameSize.Text = "Same Size";
-            }else
-            {
-                lblFilesTheSameSize.Text = "Different Size";
+                FileInfo fileInfoSource = new FileInfo(filePath);
+
+                // Now you can use fileInfo to access properties of each individual file
+                // For example:
+                DateTime createdDateTime = fileInfoSource.CreationTime;
+                string fileName = fileInfoSource.Name;
+                string fileDirectory = fileInfoSource.DirectoryName;
+                // ... and so on
+                //file size
+                long fileSizeInBytes = fileInfoSource.Length;
+
+                string fileSizeFormatted = FormatFileSize(fileSizeInBytes);
+                lblFile1Size.Text = fileSizeFormatted;
+
+                lblFile1Name.Text = fileName;
+
+                lblFile1Location.Text = fileDirectory;
+
+                lblFile1CreatedDateAndTime.Text = $"{createdDateTime}";
+
+                // File icon
+                Icon fileIcon = Icon.ExtractAssociatedIcon(fileInfoSource.FullName);
+                Image fileImage = fileIcon.ToBitmap();
+                picFile1Logo.Image = fileImage;
+
             }
-           
 
-            // File name
-            string fileNameTarget = fileInfoTarget.Name;
-            lblFile2Name.Text = fileName;
+            List<string> existingFilesDestination = parentForm.ExistingFilesInDestination;
 
-            // File location (directory)
-            string fileDirectoryTarget = fileInfoTarget.DirectoryName;
-            lblFile2Location.Text = fileDirectory;
-
-
-            // Created date and time
-            DateTime createdDateTimeTarget = fileInfoTarget.CreationTime.Date;
-
-           
-            if (DateTime.TryParse(lblFile1CreatedDateAndTime.Text, out createdDateTime))
+            foreach (string filePath in existingFilesDestination)
             {
-                // Comparison between label's Date and createdDateTimeTarget's Date
-                if (createdDateTime.Date == createdDateTimeTarget)
+                FileInfo fileInfoDestination = new FileInfo(filePath);
+
+                // Now you can use fileInfo to access properties of each individual file
+                // For example:
+                DateTime createdDateTime = fileInfoDestination.CreationTime;
+                string fileName = fileInfoDestination.Name;
+                string fileDirectory = fileInfoDestination.DirectoryName;
+                // ... and so on
+                //file size
+                long fileSizeInBytes = fileInfoDestination.Length;
+
+                string fileSizeFormatted = FormatFileSize(fileSizeInBytes);
+              
+                if (lblFile1Size.Text == fileSizeFormatted)
+                {
+                    lblFilesTheSameSize.Text = "Same Size";
+                }else
+                {
+                    lblFilesTheSameSize.Text = "Different Size";
+                }
+
+                if(lblFile1CreatedDateAndTime.Text == $"{createdDateTime}")
                 {
                     lblFilesCreatedTheSameDate.Text = "Same Date";
                 }
@@ -111,12 +105,19 @@ namespace copyer
                 {
                     lblFilesCreatedTheSameDate.Text = "Different Date";
                 }
+
+                lblFile2Name.Text = fileName;
+                lblFile2Location.Text = fileDirectory;
+
+                // File icon
+                Icon fileIcon = Icon.ExtractAssociatedIcon(fileInfoDestination.FullName);
+                Image fileImage = fileIcon.ToBitmap();
+                picFile2Logo.Image = fileImage;
+
+
             }
 
-            // File icon
-            Icon fileIconTarget = Icon.ExtractAssociatedIcon(lblTarget);
-            Image fileImageTarget = fileIcon.ToBitmap();
-            picFile2Logo.Image = fileImage;
+
         }
 
         private string FormatFileSize(long bytes)

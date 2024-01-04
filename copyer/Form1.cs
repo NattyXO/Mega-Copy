@@ -15,15 +15,31 @@ namespace copyer
     public partial class Form1 : Form
     {
 
-        public string FileSourceLocationText
+        public List<string> ExistingFiles
         {
-            get { return txtSource.Text; }
-            set { txtSource.Text = value; }
+            get
+            {
+                List<string> existingFiles = new List<string>();
+                foreach (ListViewItem item in listView1.Items)
+                {
+                    existingFiles.Add(item.Text); // Assuming the file name is the text of the ListViewItem
+                }
+                return existingFiles;
+            }
         }
-        public string FileTargetLocationText
+
+        
+        public List<string> ExistingFilesInDestination
         {
-            get { return txtTarget.Text; }
-            set { txtTarget.Text = value; }
+            get
+            {
+                List<string> existingFiles = new List<string>();
+                foreach (ListViewItem item in listView2.Items)
+                {
+                    existingFiles.Add(item.Text); // Assuming the file name is the text of the ListViewItem
+                }
+                return existingFiles;
+            }
         }
 
         public const int WM_NCLBUTTONDOWN = 0xA1;
@@ -37,6 +53,7 @@ namespace copyer
         public Form1()
         {
             InitializeComponent();
+            
         }
 
 
@@ -56,8 +73,6 @@ namespace copyer
             }
 
         }
-
-
         private void btnDestinationLocation_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
@@ -67,6 +82,61 @@ namespace copyer
                 txtTarget.Text = fbd.SelectedPath;
             }
         }
+
+        public void separateAlreadyExistsFiles()
+        {
+            string[] sourceFiles = txtSource.Text.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+            string destinationFolder = txtTarget.Text;
+
+            List<string> conflictingFiles = new List<string>();
+
+            foreach (string sourceFile in sourceFiles)
+            {
+                string fileName = Path.GetFileName(sourceFile);
+                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                if (File.Exists(destinationFilePath))
+                {
+                    conflictingFiles.Add(destinationFilePath); // Store the conflicting file paths
+                }
+            }
+
+            listView1.Items.Clear();
+
+            foreach (string conflictingFile in conflictingFiles)
+            {
+                // Add each conflicting file path as a ListViewItem to the ListView
+                listView1.Items.Add(new ListViewItem(conflictingFile));
+            }
+        }
+
+        public void SeparateAlreadyExistsFilesInDestination()
+        {
+            string[] sourceFiles = txtSource.Text.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+            string destinationFolder = txtTarget.Text;
+
+            List<string> conflictingFiles = new List<string>();
+
+            foreach (string sourceFile in sourceFiles)
+            {
+                string fileName = Path.GetFileName(sourceFile);
+                string destinationFilePath = Path.Combine(destinationFolder, fileName);
+
+                if (File.Exists(destinationFilePath) && File.Exists(sourceFile))
+                {
+                    conflictingFiles.Add(destinationFilePath); // Store the conflicting file paths
+                }
+            }
+
+            listView2.Items.Clear();
+
+            foreach (string conflictingFile in conflictingFiles)
+            {
+                // Add each conflicting file path as a ListViewItem to the ListView
+                listView2.Items.Add(new ListViewItem(conflictingFile));
+            }
+        }
+
 
         private long GetTotalFileSize(string[] files)
         {
@@ -188,6 +258,8 @@ namespace copyer
 
             if (existsInDestination)
             {
+                separateAlreadyExistsFiles();
+                SeparateAlreadyExistsFilesInDestination();
                 popup ss = new popup(this);
                 ss.ShowDialog();
 
@@ -251,14 +323,14 @@ namespace copyer
                             }
                             else
                             {
-                                CopyFilesWithoutOverwrite(sourceFiles, destinationFolder);
+                                CutFilesWithoutOverwrite(sourceFiles, destinationFolder);
                             }
                         }
 
                         // Copy the file if it doesn't exist in the destination or user chooses not to skip
                         try
                         {
-                            File.Copy(sourceFile, destinationFilePath);
+                            File.Move(sourceFile, destinationFilePath);
                         }
                         catch (Exception ex)
                         {
@@ -266,8 +338,7 @@ namespace copyer
                         }
                     }
                     TransferFilesSkip();
-                    lblInfo.Text = "Copy operation completed!";
-
+                    lblInfo.Text = "Move operation completed!";
 
                 }
                 else if (ss.UserOption == PopupOption.SkipAll)
@@ -355,7 +426,7 @@ namespace copyer
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"An error occurred: {ex.Message}");
+                    //MessageBox.Show($"An error occurred: {ex.Message}");
                 }
             }
         }
@@ -381,6 +452,8 @@ namespace copyer
 
             if (existsInDestination)
             {
+                separateAlreadyExistsFiles();
+                SeparateAlreadyExistsFilesInDestination();
                 popup ss = new popup(this);
                 ss.ShowDialog();
 
@@ -579,6 +652,7 @@ namespace copyer
             }
         }
 
+       
         private async Task TransferFiles(string[] sourceFiles, string destinationFolder)
         {
             // Total size of all files to transfer
@@ -642,6 +716,7 @@ namespace copyer
 
             lblProgress.Text = "100%"; // Ensure it reaches 100% after completion
         }
+        
 
     }
 }
